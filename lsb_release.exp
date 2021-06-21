@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+
+spawn lsb_release -a
+expect -indices -re "(?nx)Description\\s*:\\s*(\[\\w .\\-_\]+)" {
+    puts "////$expect_out(1,string)////"
+}

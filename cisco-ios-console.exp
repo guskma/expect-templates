@@ -1,0 +1,84 @@
+#!/usr/bin/expect -f
+
+proc kill_terminal {} {
+    send \001
+    send "k"
+    expect "Really kill this window"
+    send "y"
+}
+
+proc send_cmd {cmd {tmpTimeout 5}} {
+    set timeout $tmpTimeout
+    send "$cmd\r"
+}
+
+source "params.exp"
+
+set login_type 0
+set serial ""
+set hostname ""
+
+spawn screen -L -Logfile $logfile $device $baud
+set timeout 3
+send "\r"
+for {set i 0} {$i < 10} {incr i} {
+    expect {
+        "Username:" {
+            set login_type [expr $login_typ ^ 1]
+            send "$username\r"
+        }
+        "Password:" {
+            set login_type [expr $login_type ^ 2]
+            if {$login_type < 4} {
+                send "$password\r"
+            } else {
+                send "$enable\r"
+            }
+        }
+        "${hostname}>" {
+            set login_type [expr $login_type ^ 4]
+            send "enable\r"
+        }
+        "${hostname}#" {
+            set login_type [expr $login_type ^ 8]
+            send "\r\r"
+            expect -re "#\\s+(\\S.+)#" {
+                set hostname $expect_out(1,string)
+                puts "/////////hostname: $hostname/////////"
+                unset expect_out(buffer)
+            }
+            break
+        }
+        timeout {
+            send "\r"
+        }
+    }
+}
+
+if {$login_type < 4} {
+    #kill_terminal
+    puts "Error: Couldn't login(${login_type})"
+    interact
+    exit
+}
+
+set timeout 20
+
+send_cmd "ter len 0"
+expect "${hostname}#"
+
+send_cmd "sh ver" 10
+expect {
+    -re "(?n)System serial number\\s*:\\s*(\[\\d\\w\]+)\\s*Top" {
+        set serial $expect_out(1,string)
+        exp_continue
+    }
+    "${hostname}#" 
+}
+
+send_cmd "exit"
+expect "Press RETURN"
+
+kill_terminal
+
+puts "S/N is $serial"

@@ -1,0 +1,21 @@
+# Expectパラメータ設定用スクリプト
+
+# ログインユーザ名
+# パスワードのみの場合も一応入れておく
+set username "cisco"
+# パスワード
+set password "cisco"
+# 特権昇格パスワード
+set enable "cisco"
+
+# シリアルポート
+# Ubuntuの場合: /dev/ttyUSB*
+# WSL(v1)の場合: /dev/ttyS*
+#   Sの後の数字はシリアルポートのCOM*に対応
+#   WSL2はシリアル接続に対応していない
+set device "/dev/ttyUSB0"
+# ボーレート(NW系は9600、サーバ類は112800が多い)
+set baud "9600"
+# screenコマンドのログファイル
+# expectそのもののログはteeで作ること
+set logfile "screen.log"
