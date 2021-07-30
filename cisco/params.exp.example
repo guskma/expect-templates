@@ -19,3 +19,11 @@ set baud "9600"
 # screenコマンドのログファイル
 # expectそのもののログはteeで作ること
 set logfile "screen.log"
+
+# ネットワーク設定
+# 接続先IPアドレス
+set ipaddress "192.168.0.1"
+# SSHポート
+set sshport "22"
+# Telnetポート
+set telnetport "23"

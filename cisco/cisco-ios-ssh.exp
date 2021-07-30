@@ -1,0 +1,48 @@
+#!/usr/bin/expect -f
+
+##### SSHログインマクロ #####
+
+# CiscoIOSにSSHで自動ログインをします。
+
+## 使い方
+
+# 各種パラメータ入力用のparams.exp.exampleをコピーしてparams.expファイルを作成します。
+# cp params.exp.example params.exp
+
+# パラメータを編集します。
+# nano params.exp
+
+# 実行します。
+# expect -f cisco-ios-ssh.exp
+# または
+# ./cisco-ios-ssh.exp
+
+source "params.exp"
+
+spawn ssh -l $username -p $sshport $ipaddress
+
+set login_type 0
+
+expect {
+    "(yes/no)?" {
+        send "yes\r"
+        exp_continue
+    }
+    "Password:" {
+        if {$login_type < 1} {
+            send "$password\n"
+        } else {
+            send "$enable\n"
+        }
+        exp_continue
+    }
+    ">" {
+        set login_type 1
+        send "enable"
+        exp_continue
+    }
+    "#" {
+        interact
+    }
+}
+
