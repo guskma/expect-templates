@@ -9,7 +9,7 @@ set password "cisco"
 set enable "cisco"
 
 # シリアルポート
-# Ubuntuの場合: /dev/ttyUSB*
+# UbuntuやRaspbianの場合: /dev/ttyUSB*
 # WSL(v1)の場合: /dev/ttyS*
 #   Sの後の数字はシリアルポートのCOM*に対応
 #   WSL2はシリアル接続に対応していない
